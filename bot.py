@@ -1,12 +1,10 @@
 import os
 import json
-import ast
-import shlex
-import shutil
 import discord
-import crayons
+# import crayons
 import random
 import discord
+from discord import Colour
 import utils
 from datetime import datetime, timedelta
 
@@ -49,15 +47,22 @@ def owner_or_has_permissions(**perms):
 async def log_command(ctx):
     if ctx.invoked_subcommand:
         return
-    ts = crayons.white(utils.get_timestamp(), bold=True)
-    msg = crayons.green(ctx.message.content.replace(
-        ctx.prefix, "", 1), bold=True)
-    chan = crayons.magenta(f"#{ctx.channel}", bold=True)
-    guild = crayons.magenta(f"({ctx.guild})")
-    user = crayons.yellow(f"{ctx.author}", bold=True)
+    ts = utils.get_timestamp()
+    msg = ctx.message.content.replace(
+        ctx.prefix, "", 1)
+    chan = f"#{ctx.channel}"
+    guild = f"({ctx.guild})"
+    user = f"{ctx.author}"
     print(f"{ts} {msg!s} in {chan} {guild} by {user}")
 
 
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+# HELP COMMAND
 @bot.command(aliases=["h"])
 async def help(ctx):
     embed = discord.Embed(title=f"Bot help commands!",
@@ -68,37 +73,49 @@ async def help(ctx):
     await ctx.send(embed=embed)
 
 
+# DARE COMMAND
 @bot.command(aliases=["dares", "d"])
 async def dare(ctx):
     with open("data/dares.json", "r", encoding="utf-8") as f:
         data_dares = json.load(f)
-        qn = random.randint(0, len(data_dares) - 1)
-        msg = f"```fix\n{data_dares[qn]['dare']}\n``` "
-        await ctx.send(msg)
+
+        qn = random.randint(1, len(data_dares) - 1)
+
+        embed = discord.Embed(title=f"Dare #{qn}", description="\n\n> **{}**".format(
+            readJSON("data\\dares.json", "dare" + str(qn))), color=discord.Colour.random())
+
+        await ctx.send(embed=embed)
 
 
+# TRUTH COMMAND
 @bot.command(aliases=["truths", "t"])
 async def truth(ctx):
-    with open("data/truths.json", "r", encoding="utf-8") as f:
+    with open("data/wyr.json", "r", encoding="utf-8") as f:
         data_truths = json.load(f)
+
         qn = random.randint(1, len(data_truths) - 1)
-        msg = "```fix\n{}\n```".format(
-            readJSON("data\\truths.json", "truths" + str(qn)))
-        await ctx.send(msg)
+
+        embed = discord.Embed(title=f"Truth #{qn}", description="\n\n> **{}**".format(
+            readJSON("data\\wyr.json", "wyr" + str(qn))), color=discord.Colour.random())
+
+        await ctx.send(embed=embed)
 
 
-@bot.command(aliases=["cf"])
-async def coinflip(ctx):
-    choice = random.randint(0, 1)
-    if choice == 1:
-        result = "Heads"
-    else:
-        result = "Tails"
-    embed = discord.Embed(title=f"{result}",
-                          description=f"")
-    await ctx.send(embed=embed)
+# WOULD YOU RATHER
+@bot.command(aliases=["wouldyourather"])
+async def wyr(ctx):
+    with open("data/wyr.json", "r", encoding="utf-8") as f:
+        data_wyr = json.load(f)
+
+        qn = random.randint(1, len(data_wyr) - 1)
+
+        embed = discord.Embed(title=f"Would You Rather #{qn}", description="\n\n> **{}**".format(
+            readJSON("data\\wyr.json", "wyr" + str(qn))), color=discord.Colour.random())
+
+        await ctx.send(embed=embed)
 
 
+# PARANOIA COMMAND
 @bot.command(aliases=["p", "para"])
 async def paranoia(ctx, user: discord.User):
     with open("data/paranoia.json", "r", encoding="utf-8") as f:
@@ -111,6 +128,25 @@ async def paranoia(ctx, user: discord.User):
         await user.send(embed=embed)
 
 
+# COINFLIP COMMAND
+@bot.command(aliases=["cf"])
+async def coinflip(ctx):
+    choice = random.randint(0, 1)
+    if choice == 1:
+        result = "Heads"
+    else:
+        result = "Tails"
+    embed = discord.Embed(title=f"{result}",
+                          description=f"")
+    await ctx.send(embed=embed)
+
+
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+# =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
 async def status_task():
     while True:
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Lmao"))
@@ -120,8 +156,8 @@ async def status_task():
 @bot.event
 async def on_ready():
     bot.loop.create_task(status_task())
-    ts = crayons.white(utils.get_timestamp(), bold=True)
-    print(f"{ts} Logged in as {crayons.red(bot.user, bold=True)} (ID {crayons.yellow(bot.user.id, bold=True)})")
+    ts = utils.get_timestamp()
+    print(f"{ts} Logged in as {bot.user} (ID {bot.user.id})")
     owner = bot.get_user(bot.owner_id)
     try:
         print("Ready!")
@@ -132,8 +168,8 @@ async def on_ready():
 
 @bot.event
 async def on_command_error(ctx, error):
-    ts = crayons.white(utils.get_timestamp(), bold=True)
-    print(f"{ts} {crayons.red(error.__class__.__name__, bold=True)} {error}")
+    ts = utils.get_timestamp()
+    print(f"{ts} {error.__class__.__name__} {error}")
     if isinstance(error, commands.NotOwner):
         await ctx.send("**Restricted command.**", delete_after=10)
     elif isinstance(error, commands.MissingPermissions):
