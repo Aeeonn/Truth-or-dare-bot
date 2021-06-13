@@ -5,6 +5,8 @@ import discord
 import random
 import discord
 from discord import Colour
+from discord.channel import DMChannel
+from discord.ext.commands.core import guild_only
 import utils
 from datetime import datetime, timedelta
 
@@ -20,6 +22,10 @@ import aiohttp
 bot = commands.Bot(command_prefix='+', case_insensitive=True)
 bot.remove_command('help')
 bot.owner_id = '706669771889967135'
+
+para_f = open("data/paranoia.json", "r", encoding="utf-8")
+data_paranoia = json.load(para_f)
+para_qn = random.randint(1, len(data_paranoia) - 1)
 
 
 def readJSON(file, key):
@@ -81,8 +87,9 @@ async def dare(ctx):
 
         qn = random.randint(1, len(data_dares) - 1)
 
-        embed = discord.Embed(title=f"Dare #{qn}", description="\n\n> **{}**".format(
-            readJSON("data\\dares.json", "dare" + str(qn))), color=discord.Colour.random())
+        embed = discord.Embed(title=f"Dare", description="\n\n> **{}**".format(
+            readJSON("data\\dares.json", "dare" + str(qn))), color=discord.Colour.blurple())
+        embed.set_footer(text=f"#{qn}")
 
         await ctx.send(embed=embed)
 
@@ -90,42 +97,63 @@ async def dare(ctx):
 # TRUTH COMMAND
 @bot.command(aliases=["truths", "t"])
 async def truth(ctx):
-    with open("data/wyr.json", "r", encoding="utf-8") as f:
+    with open("data/truths.json", "r", encoding="utf-8") as f:
         data_truths = json.load(f)
 
         qn = random.randint(1, len(data_truths) - 1)
 
-        embed = discord.Embed(title=f"Truth #{qn}", description="\n\n> **{}**".format(
-            readJSON("data\\wyr.json", "wyr" + str(qn))), color=discord.Colour.random())
+        embed = discord.Embed(title=f"Truth", description="\n\n> **{}**".format(
+            readJSON("data\\truths.json", "truth" + str(qn))), color=discord.Colour.dark_purple())
+        embed.set_footer(text=f"#{qn}")
 
         await ctx.send(embed=embed)
 
 
 # WOULD YOU RATHER
-@bot.command(aliases=["wouldyourather"])
-async def wyr(ctx):
+@bot.command(aliases=["wyr", "w"])
+async def wouldyourather(ctx):
     with open("data/wyr.json", "r", encoding="utf-8") as f:
         data_wyr = json.load(f)
 
         qn = random.randint(1, len(data_wyr) - 1)
 
-        embed = discord.Embed(title=f"Would You Rather #{qn}", description="\n\n> **{}**".format(
-            readJSON("data\\wyr.json", "wyr" + str(qn))), color=discord.Colour.random())
+        embed = discord.Embed(title=f"Wyr", description="\n\n> **{}**".format(
+            readJSON("data\\wyr.json", "wyr" + str(qn))), color=discord.Colour.orange())
+        embed.set_footer(text=f"#{qn}")
+
+        await ctx.send(embed=embed)
+
+
+# NHIE COMMAND
+@bot.command(aliases=["nhie", "n"])
+async def NeverHaveIEver(ctx):
+    with open("data/nhie.json", "r", encoding="utf-8") as f:
+        data_nhie = json.load(f)
+
+        qn = random.randint(1, len(data_nhie) - 1)
+
+        embed = discord.Embed(title=f"Nhie", description="\n\n> **{}**".format(
+            readJSON("data\\nhie.json", "nhie" + str(qn))), color=discord.Colour.dark_blue())
+        embed.set_footer(text=f"#{qn}")
 
         await ctx.send(embed=embed)
 
 
 # PARANOIA COMMAND
-@bot.command(aliases=["p", "para"])
-async def paranoia(ctx, user: discord.User):
-    with open("data/paranoia.json", "r", encoding="utf-8") as f:
-        data_paranoia = json.load(f)
-        qn = random.randint(0, len(data_paranoia) - 1)
-        message = f"```fix\n{data_paranoia[qn]['paranoia']}\n```"
-
-        embed = discord.Embed(
-            title=f"Paranoia from {ctx.message.author.name}", description=f"The dare you got is: \n\n{message}")
-        await user.send(embed=embed)
+# @bot.command(aliases=["para", "p"])
+# async def paranoia(ctx, user: discord.User):
+#
+#    embed = discord.Embed(
+#        title=f"Paranoia from {ctx.message.author.name}", description="The question you got is: \n\n**{}**".format(readJSON("data\\paranoia.json", "para" + str(para_qn))), color=discord.Colour.dark_blue())
+#    embed.set_footer(text=f"Answer to this question with \"+ans <answer>\"")
+#    await user.send(embed=embed)
+#
+#
+# @bot.command(aliases=["ans"])
+# async def answer(ctx):
+#    emoji = ":white_check_mark:"
+#    channelid = "847449691347746846"
+#    user = DMChannel
 
 
 # COINFLIP COMMAND
