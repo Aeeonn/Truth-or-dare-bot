@@ -5,8 +5,10 @@ import discord
 import random
 import discord
 from discord import Colour
+from discord import client
 from discord.channel import DMChannel
 from discord.ext.commands.core import guild_only
+from discord.message import Message
 import utils
 from datetime import datetime, timedelta
 
@@ -147,13 +149,26 @@ async def NeverHaveIEver(ctx):
 #        title=f"Paranoia from {ctx.message.author.name}", description="The question you got is: \n\n**{}**".format(readJSON("data\\paranoia.json", "para" + str(para_qn))), color=discord.Colour.dark_blue())
 #    embed.set_footer(text=f"Answer to this question with \"+ans <answer>\"")
 #    await user.send(embed=embed)
+
 #
+# @bot.event
+# async def on_message(msg, *arg):
+#    if msg.author.bot:
+#        return
+#    else:
+#        if "+ans" == msg.content or "+answer" == msg.content:
+#            await client.send(msg.channel, "You have to add an answer!")
+#            await msg.add_reaction("❌")  # ✅❌
+#        else:
+#            return
 #
 # @bot.command(aliases=["ans"])
-# async def answer(ctx):
+# async def answer(ctx, arg):
 #    emoji = ":white_check_mark:"
-#    channelid = "847449691347746846"
-#    user = DMChannel
+#    channelid = "735914630521683981" # Change ID
+#    user = DMChannel.recipient()
+#
+#    message = channelid.
 
 
 # COINFLIP COMMAND
